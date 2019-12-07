@@ -9,8 +9,8 @@ cmake.generator     Ninja
 
 name                inkscape-gtk3-devel
 conflicts           inkscape inkscape-devel
-set git_commit      66c9ca5f
-set git_date        20191124
+set git_commit      ea787eb7
+set git_date        20191207
 revision            4
 version             1.0alpha-${git_date}
 license             GPL-2 LGPL-2.1
@@ -75,9 +75,6 @@ depends_lib-append \
                     port:py${python_version}-lxml \
                     port:py${python_version}-numpy
 
-patchfiles         patch_lib_dir.patch
-patch.pre_args     -p1
-
 # py-numpy is currently not universal (#48263).
 universal_variant no
 
@@ -86,6 +83,7 @@ universal_variant no
 compiler.blacklist-append {clang < 500} *gcc-3.* *gcc-4.*
 
 configure.args-append \
+    -DINKSCAPE_INSTALL_LIBDIR:PATH=${prefix}/lib \
     -DWITH_DBUS:BOOL=ON \
     -DWITH_GRAPHICS_MAGICK:BOOL=OFF \
     -DWITH_OPENMP=OFF \

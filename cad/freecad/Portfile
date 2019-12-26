@@ -4,7 +4,8 @@ PortSystem              1.0
 PortGroup               cmake 1.1
 PortGroup               compilers 1.0
 PortGroup               github 1.0
-PortGroup               qt4 1.0
+PortGroup               python 1.0
+PortGroup               qt5 1.0
 
 github.setup            FreeCAD FreeCAD 0.18.4
 revision                0
@@ -38,19 +39,18 @@ depends_lib-append      port:boost \
                         port:eigen3 \
                         port:freetype \
                         port:opencascade \
-                        port:py27-backports-functools_lru_cache \
-                        port:py27-matplotlib \
-                        port:py27-pivy \
-                        port:py27-pyside \
-                        port:py27-pyside-tools \
-                        port:py27-shiboken \
+                        port:py${python.version}-matplotlib \
+                        port:py${python.version}-pivy \
+                        port:py${python.version}-pyside \
+                        port:py${python.version}-pyside-tools \
+                        port:py${python.version}-shiboken \
                         port:SoQt \
                         port:swig \
                         port:swig-python \
                         port:xercesc3 \
                         port:zlib
 
-depends_run             port:qt4-mac-sqlite3-plugin
+depends_run             port:qt5-sqlite-plugin
 
 patchfiles              cMake-FindCoin3D.cmake.diff \
                         patch-src-Main-MainPy.cpp.diff
@@ -61,9 +61,6 @@ patchfiles-append       patch-CMakeLists.txt.diff
 patchfiles-append       FindPySideTools.cmake.patch
 
 post-patch {
-    reinplace "s|QLibraryInfo::location.*|QLatin1String\(\"${applications_dir}/Qt4/\"\);|" \
-        ${worksrcpath}/src/Gui/Assistant.cpp
-
     reinplace "s|/Applications|${applications_dir}|" \
         ${worksrcpath}/src/Mod/OpenSCAD/OpenSCADUtils.py
 }
@@ -81,9 +78,7 @@ configure.pre_args-replace \
 configure.args-append   -DCMAKE_INSTALL_DATADIR=${prefix}/share/${name} \
                         -DCMAKE_INSTALL_DOCDIR=${prefix}/share/doc/${name} \
                         -DCMAKE_FRAMEWORK_PATH=${frameworks_dir} \
-                        -DMACPORTS_PREFIX=${prefix} \
-                        -DPYSIDEUIC4BINARY=${prefix}/bin/pyside-uic-2.7 \
-                        -DPYSIDERCC4BINARY=${prefix}/bin/pyside-rcc-2.7
+                        -DMACPORTS_PREFIX=${prefix} 
 
 pre-configure {
     # The c++ compiler is used for linking instead of fc.
@@ -92,13 +87,12 @@ pre-configure {
     set libgfortran [exec ${configure.fc} --print-file-name libgfortran.a]
     configure.ldflags-append "-L[file dirname ${libgfortran}]"
 
-    set python_prefix [exec ${prefix}/bin/python2.7-config --prefix]
     configure.args-append -DBUILD_ROBOT=NO \
-        -DPYTHON_LIBRARY=${python_prefix}/Python \
-        -DPYTHON_INCLUDE_DIR=${python_prefix}/Headers \
-        -DPYTHON_EXECUTABLE=${python_prefix}/bin/python2.7 \
-        -DShiboken_DIR=${python_prefix}/lib/cmake/Shiboken-1.2.4 \
-        -DPySide_DIR=${python_prefix}/lib/cmake/PySide-1.2.4 \
+        -DPYTHON_LIBRARY=${python.lib} \
+        -DPYTHON_INCLUDE_DIR=${python.include} \
+        -DPYTHON_EXECUTABLE=${python.bin} \
+        -DShiboken_DIR=${python.prefix}/lib/cmake/Shiboken-1.2.4 \
+        -DPySide_DIR=${python.prefix}/lib/cmake/PySide-1.2.4 \
         -DOCE_DIR=${frameworks_dir}/OCE.framework/Versions/0.17/Resources
 }
 

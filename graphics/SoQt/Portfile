@@ -2,13 +2,14 @@
 
 PortSystem              1.0
 PortGroup               active_variants 1.1
-PortGroup               bitbucket 1.0
-PortGroup               qt4 1.0
+PortGroup               github 1.0
+PortGroup               qt5 1.0
+PortGroup               cmake 1.1
 
-bitbucket.setup         Coin3D coin 1.5.0 SoQt-
-bitbucket.tarball_from  downloads
+github.setup            coin3d soqt 1.6.0 SoQt-
+github.tarball_from     archive
 name                    SoQt
-revision                2
+revision                0
 categories              graphics devel
 platforms               darwin
 maintainers             {gmail.com:mark.brethen @mbrethen} openmaintainer
@@ -27,16 +28,3 @@ depends_lib-append      port:Coin-framework
 
 depends_build-append    port:pkgconfig \
                         port:doxygen
-
-patchfiles              patch-configure.diff \
-                        patch-src-Inventor-Qt-Makefile.in.diff
-
-configure.args-append   --disable-debug \
-                        --disable-symbols \
-                        --disable-dependency-tracking
-
-post-build {
-    reinplace -E {s|-arch [a-z0-9_]+||g} \
-        ${worksrcpath}/SoQt.pc \
-        ${worksrcpath}/soqt-default.cfg
-}

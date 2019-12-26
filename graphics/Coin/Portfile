@@ -1,12 +1,13 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           qt4 1.0
-PortGroup           bitbucket 1.0
+PortGroup           github 1.0
+PortGroup           cmake 1.1
 
-bitbucket.setup     Coin3D coin 3.1.3 Coin-
+github.setup        Coin3D coin 4.0.0 Coin-
+fetch.type          git
 name                Coin
-revision            7
+revision            0
 license             BSD
 description         cross platform C++ OpenGL scene graph library
 long_description    Coin is a high-level 3D graphics library with a   \
@@ -19,13 +20,16 @@ categories          graphics devel
 platforms           darwin
 maintainers         nomaintainer
 
-homepage            https://bitbucket.org/Coin3D/coin/wiki/Home
+homepage            https://github.com/coin3d/coin
 
-bitbucket.tarball_from downloads
 distname            ${name}-${version}
 
-checksums           rmd160  e57fd6a4876a06874429f9ad6b96f166f5609362 \
-                    sha256  583478c581317862aa03a19f14c527c3888478a06284b9a46a0155fa5886d417
+checksums           rmd160  201e0c2abb7b90e348e7d2f9c0ee750ab5fe92dd \
+                    sha256  b00d2a8e9d962397cf9bf0d9baa81bcecfbd16eef675a98c792f5cf49eb6e805 \
+                    size    6788294
+
+patchfiles          cpack_d.patch
+patch.pre_args      -p1
 
 depends_lib-append  port:simage \
                     port:fontconfig \
@@ -33,30 +37,11 @@ depends_lib-append  port:simage \
                     port:zlib \
                     port:bzip2
 
-patchfiles          configure.patch \
-                    for.patch \
-                    clang-name-lookup.diff \
-                    fix-weird-error.diff \
-                    patch-include-Inventor-C-base-math-undefs.h.diff \
-                    patch-Info.plist.in.diff
-
-configure.args-append \
-                    --disable-debug \
-                    --disable-symbols \
-                    --disable-dependency-tracking \
-                    --without-framework
-
-post-build {
-    reinplace -E {s|-arch [a-z0-9_]+||g} \
-        ${worksrcpath}/Coin.pc \
-        ${worksrcpath}/coin-default.cfg
-}
-
 if {${name} eq ${subport}} {
 
     variant manpages description {Include API documentation in manpages.} {
         depends_build-append    port:doxygen
-        configure.args-append   --enable-man --mandir=${prefix}/share/man
+        configure.args-append   -DCOIN_BUILD_DOCUMENTATION_MAN=ON
         post-destroot {
             file rename ${destroot}${prefix}/share/man/man3/threads.3 \
                 ${destroot}${prefix}/share/man/man3/threads-coin.3
@@ -68,11 +53,11 @@ if {${name} eq ${subport}} {
 
 subport Coin-framework {
     conflicts               Coin
-    revision            6
+    revision                0
 
-    patchfiles-append       framework-prefix.patch
-    configure.args-replace  --without-framework \
-                            --with-framework-prefix=${frameworks_dir}
+    configure.args-replace  -DCOIN_BUILD_MAC_FRAMEWORK=OFF \
+                            -DCOIN_BUILD_MAC_FRAMEWORK=ON
+                            
 }
 
 livecheck.type      regex

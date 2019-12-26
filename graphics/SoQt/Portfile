@@ -2,12 +2,13 @@
 
 PortSystem              1.0
 PortGroup               active_variants 1.1
-PortGroup               github 1.0
+PortGroup               bitbucket 1.0
 PortGroup               qt5 1.0
 PortGroup               cmake 1.1
 
-github.setup            coin3d soqt 1.6.0 SoQt-
-github.tarball_from     archive
+bitbucket.setup         Coin3D soqt 1.6.0 SoQt-
+bitbucket.tarball_from  downloads
+use_zip                 yes
 name                    SoQt
 revision                0
 categories              graphics devel
@@ -19,12 +20,16 @@ description             SoQt is a Qt GUI component toolkit library for Coin.
 
 long_description        ${description}
 
-distname                ${name}-${version}
+distname                [string tolower ${name}]-${version}-src
 
-checksums               rmd160  04e9179954f7e3bfb5d1c595ad6c62215bc24ad2 \
-                        sha256  f6a34b4c19e536c00f21aead298cdd274a7a0b03a31826fbe38fc96f3d82ab91
+checksums           rmd160  9a27a4c5b557a6b2ac217bd853e54fcb75b7fae7 \
+                    sha256  b32089ab207111d4f8676fc29535112de5266311c8df31552c21e265d5cf8a6f \
+                    size    14552185
 
-depends_lib-append      port:Coin-framework
+depends_lib             port:Coin-framework
 
-depends_build-append    port:pkgconfig \
-                        port:doxygen
+variant documentation description "Build Documentation with Doxygen" {
+    depend_build            port:doxygen
+    configure.args-append   -DSOQT_BUILD_DOCUMENTATION:BOOL=TRUE \
+                            -DSOQT_BUILD_DOC_MAN:BOOL=TRUE
+}

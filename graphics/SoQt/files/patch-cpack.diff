@@ -1,0 +1,8 @@
+--- CMakeLists.txt	2019-12-23 22:46:24.000000000 +0100
++++ CMakelists.txt	2019-12-27 00:14:49.000000000 +0100
+@@ -393,4 +393,4 @@
+ 
+ ############################################################################
+ # New CPACK section, please see the README file inside cpack.d directory.
+-add_subdirectory(cpack.d)
++# add_subdirectory(cpack.d)

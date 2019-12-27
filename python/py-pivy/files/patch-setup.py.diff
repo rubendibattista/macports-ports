@@ -1,5 +1,5 @@
 diff --git setup.py setup.py
-index 55ecc2f..f910ffe 100755
+index 55ecc2f..b018cf0 100755
 --- setup.py
 +++ setup.py
 @@ -97,35 +97,35 @@ sys.path.pop(-1)
@@ -76,7 +76,7 @@ index 55ecc2f..f910ffe 100755
              except Exception as e:
                  import traceback
                  print(red("\ndisable soqt, because there was a problem running qtinfo (needs qmake)"))
-@@ -551,7 +551,7 @@ class pivy_build(build):
+@@ -551,11 +551,11 @@ class pivy_build(build):
                      _INCLUDE_DIR = INCLUDE_DIR.replace('"', "")
                  CPP_FLAGS += ' -I' + _INCLUDE_DIR
                  CPP_FLAGS += ' -I' + os.path.join(_INCLUDE_DIR, 'Inventor', 'annex')
@@ -85,6 +85,11 @@ index 55ecc2f..f910ffe 100755
                      CPP_FLAGS += " /DCOIN_DLL /wd4244 /wd4049"
                      LDFLAGS_LIBS = quote(max(glob.glob(os.path.join(LIB_DIR, "Coin?.lib")))) + " "
                  else:
+-                    CPP_FLAGS += " -Wno-unused -Wno-maybe-uninitialized"
++                    CPP_FLAGS += " -Wno-unused -Wno-sometimes-uninitialized -std=c++11"
+                     LDFLAGS_LIBS = ' -L' + self.cmake_config_dict[config_cmd + '_LIB_DIR']
+ 
+                 if module == "soqt":
 @@ -569,7 +569,7 @@ class pivy_build(build):
                          CPP_FLAGS += " /DSOQT_DLL"
                      else:

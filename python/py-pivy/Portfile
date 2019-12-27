@@ -32,11 +32,6 @@ if {${name} ne ${subport}} {
     post-patch {
         reinplace "s|%QMAKE_COMMAND%|\"${qt_qmake_cmd}\"|g" ${worksrcpath}/setup.py
         
-        # # See https://github.com/FreeCAD/pivy/issues/42
-        # set fake_headers {cstddef cstdarg cassert}
-        # foreach header $fake_headers {
-        #     touch ${worksrcpath}/fake_headers/${header}
-        # }
     }
 
     livecheck.type  none

@@ -16,9 +16,9 @@ platforms           darwin
 
 python.versions     27 35 36 37
 
-checksums           rmd160  0fe08ffe79d44c98d670dac13bcdd6d511c2c010 \
-                    sha256  4e8b0cab586e44d78cfa2956a72c60e50be236df818b6ac406d83b505efcd8ed \
-                    size    6614987
+checksums           rmd160  e8f564cd99da93b74825dc952e23c7f7c33168d6 \
+                    sha256  1ee77d4a8cb0f064faad5e2624fdceaa34e090aa2328c758d1341666a81b0e9a \
+                    size    6614326
 
 qt5.depends_component qtbase
 
@@ -32,11 +32,11 @@ if {${name} ne ${subport}} {
     post-patch {
         reinplace "s|%QMAKE_COMMAND%|\"${qt_qmake_cmd}\"|g" ${worksrcpath}/setup.py
         
-        # See https://github.com/FreeCAD/pivy/issues/42
-        set fake_headers {cstddef cstdarg cassert}
-        foreach header $fake_headers {
-            touch ${worksrcpath}/fake_headers/${header}
-        }
+        # # See https://github.com/FreeCAD/pivy/issues/42
+        # set fake_headers {cstddef cstdarg cassert}
+        # foreach header $fake_headers {
+        #     touch ${worksrcpath}/fake_headers/${header}
+        # }
     }
 
     livecheck.type  none

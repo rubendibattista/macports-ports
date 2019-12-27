@@ -1,11 +1,131 @@
---- setup.py.orig	2017-06-12 02:50:53.000000000 -0500
-+++ setup.py	2018-04-16 18:53:14.000000000 -0500
-@@ -431,7 +431,7 @@
-                     mod_include_dir = self.do_os_popen("%s --includedir" % config_cmd)
-                     if mod_include_dir != INCLUDE_DIR:
-                         INCLUDE_DIR += '\" -I\"%s' % mod_include_dir
--                CPP_FLAGS = self.do_os_popen("%s --cppflags" % config_cmd) + " -Wno-unused -Wno-maybe-uninitialized"
-+                CPP_FLAGS = self.do_os_popen("%s --cppflags" % config_cmd) + " -Wno-unused -I%PREFIX%/libexec/qt4/include -I%PREFIX%/libexec/qt4/Library/Frameworks/QtGui.framework/Versions/4/Headers"
-                 LDFLAGS_LIBS = self.do_os_popen("%s --ldflags --libs" % config_cmd)
+diff --git setup.py setup.py
+index 456573e..91c72f5 100755
+--- setup.py
++++ setup.py
+@@ -33,6 +33,7 @@ applications.
+ import glob
+ import os
+ import shutil
++import shlex
+ import subprocess
+ import sys
  
+@@ -96,35 +97,35 @@ sys.path.pop(-1)
+ class pivy_build(build):
+     PIVY_SNAKES = r"""
+                             _____
+-                        .-'`     '.                                     
+-                     __/  __       \                                   
+-                    /  \ /  \       |    ___                          
+-                   | /`\| /`\|      | .-'  /^\/^\                   
+-                   | \(/| \(/|      |/     |) |)|                     
+-                  .-\__/ \__/       |      \_/\_/__..._             
+-          _...---'-.                /   _              '.               
+-         /,      ,             \   '|  `\                \           
+-        | ))     ))           /`|   \    `.       /)  /) |             
+-        | `      `          .'       |     `-._         /               
+-        \                 .'         |     ,_  `--....-'               
+-         `.           __.' ,         |     / /`'''`                     
+-           `'-.____.-' /  /,         |    / /                           
+-               `. `-.-` .'  \        /   / |                           
+-                 `-.__.'|    \      |   |  |-.                         
+-                    _.._|     |     /   |  |  `'.                       
+-              .-''``    |     |     |   /  |     `-.                    
+-           .'`         /      /     /  |   |        '.                  
+-         /`           /      /     |   /   |\         \               
+-        /            |      |      |   |   /\          |               
+-       ||            |      /      |   /     '.        |                
+-       |\            \      |      /   |       '.      /              
+-       \ `.           '.    /      |    \        '---'/               
+-        \  '.           `-./        \    '.          /                
+-         '.  `'.            `-._     '.__  '-._____.'--'''''--.         
+-           '-.  `'--._          `.__     `';----`              \       
+-              `-.     `-.          `.''```                     ;        
+-                 `'-..,_ `-.         `'-.                     /         
+-                        '.  '.           '.                 .'          
++                        .-'`     '.
++                     __/  __       \
++                    /  \ /  \       |    ___
++                   | /`\| /`\|      | .-'  /^\/^\
++                   | \(/| \(/|      |/     |) |)|
++                  .-\__/ \__/       |      \_/\_/__..._
++          _...---'-.                /   _              '.
++         /,      ,             \   '|  `\                \
++        | ))     ))           /`|   \    `.       /)  /) |
++        | `      `          .'       |     `-._         /
++        \                 .'         |     ,_  `--....-'
++         `.           __.' ,         |     / /`'''`
++           `'-.____.-' /  /,         |    / /
++               `. `-.-` .'  \        /   / |
++                 `-.__.'|    \      |   |  |-.
++                    _.._|     |     /   |  |  `'.
++              .-''``    |     |     |   /  |     `-.
++           .'`         /      /     /  |   |        '.
++         /`           /      /     |   /   |\         \
++        /            |      |      |   |   /\          |
++       ||            |      /      |   /     '.        |
++       |\            \      |      /   |       '.      /
++       \ `.           '.    /      |    \        '---'/
++        \  '.           `-./        \    '.          /
++         '.  `'.            `-._     '.__  '-._____.'--'''''--.
++           '-.  `'--._          `.__     `';----`              \
++              `-.     `-.          `.''```                     ;
++                 `'-..,_ `-.         `'-.                     /
++                        '.  '.           '.                 .'
+ 
+ 
+                             ~~~ HISSSSSSSSSS ~~~
+@@ -145,6 +146,12 @@ class pivy_build(build):
+     SWIG_SUPPRESS_WARNINGS = "-w302,306,307,312,314,325,361,362,467,389,503,509,510"
+     SWIG_PARAMS = "-c++ -python -includeall -modern -D__PIVY__ " + \
+                   "-I. -Ifake_headers -I\"%s\" %s -o %s_wrap.cpp " + \
++                  "-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include " + \
++                  "-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include " + \
++                  "-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include " + \
++                  "-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks " + \
++                  "-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/machine " + \
++                  "-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 " + \
+                   "interfaces" + os.sep + "%s.i"
+     if sys.version_info.major >= 3:
+         SWIG_PARAMS = '-py3 ' + SWIG_PARAMS
+@@ -165,7 +172,7 @@ class pivy_build(build):
+     }
+ 
+     import qtinfo
+-    QTINFO = qtinfo.QtInfo()
++    QTINFO = qtinfo.QtInfo(qmake_command=[%QMAKE_COMMAND%])
+ 
+     SUPPORTED_SWIG_VERSIONS = ['3.0.8', '3.0.10']
+     SWIG_VERSION = ""
+@@ -550,7 +557,7 @@ class pivy_build(build):
+                         CPP_FLAGS += " /DSOQT_DLL"
+                     else:
+                         LDFLAGS_LIBS += ' -lSoQt'
+-                
++
+                 if module == "coin":
+                     if sys.platform == 'win32':
+                         pass
+@@ -560,15 +567,18 @@ class pivy_build(build):
              if not os.path.isfile(mod_out_prefix + "_wrap.cpp"):
+                 print(red("\n=== Generating %s_wrap.cpp for %s ===\n" %
+                           (mod_out_prefix, module)))
++                swig_command = self.SWIG + " " + self.SWIG_SUPPRESS_WARNINGS + " " + self.SWIG_PARAMS % (INCLUDE_DIR, self.CXX_INCS,mod_out_prefix, module)
++
+                 print(blue(self.SWIG + " " + self.SWIG_SUPPRESS_WARNINGS + " " + self.SWIG_PARAMS %
+                            (INCLUDE_DIR,
+                             self.CXX_INCS,
+                             mod_out_prefix, module)))
+-                if os.system(self.SWIG + " " + self.SWIG_SUPPRESS_WARNINGS + " " + self.SWIG_PARAMS %
+-                             (INCLUDE_DIR,
+-                              self.CXX_INCS,
+-                              mod_out_prefix, mod_hack_name)):
++
++                swig = subprocess.Popen(shlex.split(swig_command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
++                swig_out, swig_err = swig.communicate()
++                if not(swig.returncode == 0):
+                     print(red("SWIG did not generate wrappers successfully! ** Aborting **"))
++                    print("OUTPUT: " + swig_err.decode("utf-8"))
+                     sys.exit(1)
+             else:
+                 print(red("=== %s_wrap.cpp for %s already exists! ===" %

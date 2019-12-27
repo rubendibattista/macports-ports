@@ -20,6 +20,8 @@ checksums           rmd160  0fe08ffe79d44c98d670dac13bcdd6d511c2c010 \
                     sha256  4e8b0cab586e44d78cfa2956a72c60e50be236df818b6ac406d83b505efcd8ed \
                     size    6614987
 
+qt5.depends_component qtbase
+
 if {${name} ne ${subport}} {
     depends_lib-append \
                     port:Coin-framework \
@@ -28,7 +30,7 @@ if {${name} ne ${subport}} {
     patchfiles      patch-setup.py.diff
 
     post-patch {
-        reinplace "s|%PREFIX%|${prefix}|g" ${worksrcpath}/setup.py
+        reinplace "s|%QMAKE_COMMAND%|\"${qt_qmake_cmd}\"|g" ${worksrcpath}/setup.py
     }
 
     livecheck.type  none

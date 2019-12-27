@@ -23,8 +23,6 @@ checksums               rmd160  9e6739c3c222bcce3a689f3d8c9724ca50dd1836 \
 
 python.versions         27 36 37
 
-set llvm_version        9.0
-
 if {${name} ne ${subport}} {
     PortGroup           qt5 1.0
 
@@ -60,13 +58,7 @@ if {${name} ne ${subport}} {
     depends_lib-append \
         port:libxml2 \
         port:libxslt \
-        port:clang-${llvm_version} \
-        port:llvm-${llvm_version} \
         port:py${python.version}-numpy
-
-    # only find the llvm-config from the version we intend to
-    patchfiles-append   patch-find-llvm-config.diff
-    build.env-append    PATH=${prefix}/libexec/llvm-${llvm_version}/bin:$env(PATH)
 
     qt5.depends_component \
         qtxmlpatterns \

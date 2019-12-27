@@ -6,7 +6,7 @@ PortGroup           python 1.0
 PortGroup           qt5 1.0
 
 set real_name       pivy
-github.setup        FreeCAD ${real_name} 0.6.4
+github.setup        FreeCAD ${real_name} 0.6.5a4
 name                py-${real_name}
 license             Permissive
 maintainers         {mps @Schamschula} openmaintainer
@@ -31,6 +31,12 @@ if {${name} ne ${subport}} {
 
     post-patch {
         reinplace "s|%QMAKE_COMMAND%|\"${qt_qmake_cmd}\"|g" ${worksrcpath}/setup.py
+        
+        # See https://github.com/FreeCAD/pivy/issues/42
+        set fake_headers {cstddef cstdarg cassert}
+        foreach header $fake_headers {
+            touch ${worksrcpath}/fake_headers/${header}
+        }
     }
 
     livecheck.type  none

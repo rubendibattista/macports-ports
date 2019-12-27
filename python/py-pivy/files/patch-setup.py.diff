@@ -1,5 +1,29 @@
+diff --git CMakeLists.txt CMakeLists.txt
+index 76d0d06..4ed216d 100644
+--- CMakeLists.txt
++++ CMakeLists.txt
+@@ -10,8 +10,8 @@ else()
+     MESSAGE(STATUS "COIN_FOUND: " false)
+ endif()
+ 
+-MESSAGE(STATUS "COIN_INCLUDE_DIR: " ${Coin_INCLUDE_DIR})
+-MESSAGE(STATUS "COIN_LIB_DIR: " ${Coin_LIB_DIR})
++MESSAGE(STATUS "COIN_INCLUDE_DIR: " "${Coin_INCLUDE_DIR}")
++MESSAGE(STATUS "COIN_LIB_DIR: " "${Coin_LIB_DIR}")
+ MESSAGE(STATUS "COIN_VERSION: " ${Coin_VERSION})
+ 
+ 
+@@ -24,6 +24,6 @@ else()
+     MESSAGE(STATUS "SOQT_FOUND: " false)
+ endif()
+ 
+-MESSAGE(STATUS "SOQT_INCLUDE_DIR: " ${SoQt_INCLUDE_DIRS})
+-MESSAGE(STATUS "SOQT_LIB_DIR: " ${SoQt_LIBRARY_DIRS})
++MESSAGE(STATUS "SOQT_INCLUDE_DIR: " "${SoQt_INCLUDE_DIRS}")
++MESSAGE(STATUS "SOQT_LIB_DIR: " "${SoQt_LIBRARY_DIRS}")
+ MESSAGE(STATUS "SOQT_VERSION: " ${SoQt_VERSION})
 diff --git setup.py setup.py
-index 456573e..91c72f5 100755
+index 456573e..e0c6e3b 100755
 --- setup.py
 +++ setup.py
 @@ -33,6 +33,7 @@ applications.
@@ -75,20 +99,7 @@ index 456573e..91c72f5 100755
  
  
                              ~~~ HISSSSSSSSSS ~~~
-@@ -145,6 +146,12 @@ class pivy_build(build):
-     SWIG_SUPPRESS_WARNINGS = "-w302,306,307,312,314,325,361,362,467,389,503,509,510"
-     SWIG_PARAMS = "-c++ -python -includeall -modern -D__PIVY__ " + \
-                   "-I. -Ifake_headers -I\"%s\" %s -o %s_wrap.cpp " + \
-+                  "-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/include " + \
-+                  "-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include " + \
-+                  "-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include " + \
-+                  "-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks " + \
-+                  "-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/machine " + \
-+                  "-I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 " + \
-                   "interfaces" + os.sep + "%s.i"
-     if sys.version_info.major >= 3:
-         SWIG_PARAMS = '-py3 ' + SWIG_PARAMS
-@@ -165,7 +172,7 @@ class pivy_build(build):
+@@ -165,7 +166,7 @@ class pivy_build(build):
      }
  
      import qtinfo
@@ -97,7 +108,17 @@ index 456573e..91c72f5 100755
  
      SUPPORTED_SWIG_VERSIONS = ['3.0.8', '3.0.10']
      SWIG_VERSION = ""
-@@ -550,7 +557,7 @@ class pivy_build(build):
+@@ -528,7 +529,8 @@ class pivy_build(build):
+                         CPP_FLAGS += " -I" + '"' + os.getenv("QTDIR") + "\\include\qt\""
+                         LDFLAGS_LIBS += os.path.join(os.getenv("COINDIR"), "lib", "SoQt.lib") + " "
+             else:
+-                INCLUDE_DIR = self.cmake_config_dict[config_cmd + '_INCLUDE_DIR']
++                INCLUDE_DIR = self.cmake_config_dict[config_cmd + '_INCLUDE_DIR'].split(';')[0]
++                print("INCLUDE_DIR:{}".format(INCLUDE_DIR))
+                 LIB_DIR = self.cmake_config_dict[config_cmd + '_LIB_DIR']
+                 CPP_FLAGS = ' -I' + win_quote(INCLUDE_DIR)
+                 CPP_FLAGS += ' -I' + win_quote(os.path.join(INCLUDE_DIR, 'Inventor', 'annex'))
+@@ -550,7 +552,7 @@ class pivy_build(build):
                          CPP_FLAGS += " /DSOQT_DLL"
                      else:
                          LDFLAGS_LIBS += ' -lSoQt'
@@ -106,7 +127,7 @@ index 456573e..91c72f5 100755
                  if module == "coin":
                      if sys.platform == 'win32':
                          pass
-@@ -560,15 +567,18 @@ class pivy_build(build):
+@@ -560,15 +562,18 @@ class pivy_build(build):
              if not os.path.isfile(mod_out_prefix + "_wrap.cpp"):
                  print(red("\n=== Generating %s_wrap.cpp for %s ===\n" %
                            (mod_out_prefix, module)))

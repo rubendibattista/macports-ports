@@ -67,11 +67,9 @@ if {${subport} eq ${name}} {
 
 
  if {${name} ne ${subport}} {
-     # Get python version
      set python_version [string range ${subport} 2 3]
- 
-     # Get python branch
      set python_branch  [string range ${python_version} 0 end-1].[string index ${python_version} end]
+     set python_prefix   ${frameworks_dir}/Python.framework/Versions/${python_branch}
  
      PortGroup           qt5 1.0
  
@@ -93,8 +91,24 @@ if {${subport} eq ${name}} {
                               -DLLVM_CONFIG=${prefix}/bin/llvm-config-mp-${llvm_version} \
                               -DUSE_PYTHON_VERSION=3 \
                               -DPYTHON_EXECUTABLE=${prefix}/bin/python${python_branch} \
-                              -DPYTHON_INCLUDE_DIR=${frameworks_dir}/Python.framework/Versions/${python_branch}/Headers/ \
-                              -DPYTHON_LIBRARY=${frameworks_dir}/Python.framework/Versions/${python_branch}/lib/libpython${python_branch}.dylib
+                              -DPYTHON_INCLUDE_DIR=${python_prefix}/Headers/ \
+                              -DPYTHON_LIBRARY=${python_prefix}/lib/libpython${python_branch}.dylib
+
+    set destroot_python_prefix ${destroot}/Library/Frameworks/Python.framework/Versions/${python_branch}
+
+    pre-destroot { 
+        xinstall -d -m 0755 ${destroot_python_prefix}/lib
+    }
+
+    post-destroot {
+        move ${destroot}${prefix}/bin/shiboken2 ${destroot}${prefix}/bin/shiboken2-${python_branch}
+        move ${destroot}${prefix}/include/shiboken2 ${destroot}${prefix}/include/shiboken2-${python_branch}
+        move ${destroot}${prefix}/share/man/man1/shiboken2.1 ${destroot}${prefix}/share/man/man1/shiboken2-${python_branch}.1
+        move ${destroot}${prefix}/bin/shiboken_tool.py ${destroot}${prefix}/bin/shiboken_tool-${python_branch}.py
+        
+        move ${destroot}${prefix}/lib/cmake ${destroot_python_prefix}/lib/cmake
+        move ${destroot}${prefix}/lib/pkgconfig ${destroot_python_prefix}/lib/pkgconfig
+    }
  
      livecheck.type      none
  } 

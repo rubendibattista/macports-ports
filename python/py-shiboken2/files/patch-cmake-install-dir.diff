@@ -1,7 +1,16 @@
 diff --git sources/shiboken2/data/CMakeLists.txt sources/shiboken2/data/CMakeLists.txt
-index e7ce9545..d76ffc65 100644
+index e7ce9545..cb57cd96 100644
 --- data/CMakeLists.txt
 +++ data/CMakeLists.txt
+@@ -33,7 +33,7 @@ endif()
+ configure_package_config_file(
+     "${CMAKE_CURRENT_SOURCE_DIR}/Shiboken2Config-spec.cmake.in"
+     "${CMAKE_CURRENT_BINARY_DIR}/install/Shiboken2Config${PYTHON_CONFIG_SUFFIX}.cmake"
+-     INSTALL_DESTINATION "${LIB_INSTALL_DIR}/cmake/Shiboken2-${shiboken2_VERSION}"
++     INSTALL_DESTINATION "${LIB_INSTALL_DIR}/cmake/Shiboken2"
+      PATH_VARS SHIBOKEN_PYTHON_MODULE_DIR SHIBOKEN_SHARED_LIBRARY_DIR
+ )
+ 
 @@ -45,16 +45,16 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/shiboken2.pc.in"
                 "${CMAKE_CURRENT_BINARY_DIR}/shiboken2${shiboken2_SUFFIX}.pc" @ONLY)
  
@@ -23,3 +32,13 @@ index e7ce9545..d76ffc65 100644
  
  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/shiboken2${shiboken2_SUFFIX}.pc"
          DESTINATION "${LIB_INSTALL_DIR}/pkgconfig")
+diff --git sources/shiboken2/libshiboken/CMakeLists.txt sources/shiboken2/libshiboken/CMakeLists.txt
+index a38da8d8..17058ff1 100644
+--- libshiboken/CMakeLists.txt
++++ libshiboken/CMakeLists.txt
+@@ -149,4 +149,4 @@ install(TARGETS libshiboken EXPORT Shiboken2Targets
+                             ARCHIVE DESTINATION "${LIB_INSTALL_DIR}"
+                             RUNTIME DESTINATION bin)
+ install(EXPORT Shiboken2Targets NAMESPACE Shiboken2::
+-        DESTINATION ${LIB_INSTALL_DIR}/cmake/Shiboken2-${shiboken2_VERSION})
++        DESTINATION ${LIB_INSTALL_DIR}/cmake/Shiboken2)

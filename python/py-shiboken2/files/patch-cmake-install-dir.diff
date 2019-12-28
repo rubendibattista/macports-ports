@@ -1,0 +1,25 @@
+diff --git sources/shiboken2/data/CMakeLists.txt sources/shiboken2/data/CMakeLists.txt
+index e7ce9545..d76ffc65 100644
+--- data/CMakeLists.txt
++++ data/CMakeLists.txt
+@@ -45,16 +45,16 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/shiboken2.pc.in"
+                "${CMAKE_CURRENT_BINARY_DIR}/shiboken2${shiboken2_SUFFIX}.pc" @ONLY)
+ 
+ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/Shiboken2Config.cmake"
+-        DESTINATION "${LIB_INSTALL_DIR}/cmake/Shiboken2-${shiboken2_VERSION}")
++        DESTINATION "${LIB_INSTALL_DIR}/cmake/Shiboken2")
+ 
+ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/install/Shiboken2Config${PYTHON_CONFIG_SUFFIX}.cmake"
+-        DESTINATION "${LIB_INSTALL_DIR}/cmake/Shiboken2-${shiboken2_VERSION}")
++        DESTINATION "${LIB_INSTALL_DIR}/cmake/Shiboken2")
+ 
+ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/Shiboken2ConfigVersion.cmake"
+-        DESTINATION "${LIB_INSTALL_DIR}/cmake/Shiboken2-${shiboken2_VERSION}")
++        DESTINATION "${LIB_INSTALL_DIR}/cmake/Shiboken2")
+ 
+ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/shiboken_helpers.cmake"
+-        DESTINATION "${LIB_INSTALL_DIR}/cmake/Shiboken2-${shiboken2_VERSION}")
++        DESTINATION "${LIB_INSTALL_DIR}/cmake/Shiboken2")
+ 
+ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/shiboken2${shiboken2_SUFFIX}.pc"
+         DESTINATION "${LIB_INSTALL_DIR}/pkgconfig")

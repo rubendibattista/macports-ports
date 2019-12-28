@@ -1,0 +1,12 @@
+diff --git CMakeLists.txt CMakeLists.txt
+index c1349cae..bb084b5b 100644
+--- CMakeLists.txt
++++ CMakeLists.txt
+@@ -10,6 +10,7 @@ include(CheckIncludeFileCXX)
+ 
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake_helpers/")
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/data/")
++SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+ 
+ include(helpers)
+ include(shiboken_helpers)

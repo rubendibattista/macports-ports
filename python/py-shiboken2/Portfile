@@ -112,6 +112,7 @@ if {${subport} eq ${name}} {
         
         move ${destroot}${prefix}/lib/cmake ${destroot}${python_prefix}/lib/cmake
         move ${destroot}${prefix}/lib/pkgconfig ${destroot}${python_prefix}/lib/pkgconfig
+        move ${destroot}${prefix}/lib/python${python_branch} ${destroot}${python_prefix}/lib/python${python_branch}
     }
  
      livecheck.type      none

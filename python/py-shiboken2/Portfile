@@ -7,7 +7,7 @@ PortGroup               select 1.0
  
 
 name                    py-shiboken2
-version                 5.14.0
+version                 5.13.2
 revision                0
 categories-append       python devel
 platforms               darwin
@@ -21,9 +21,9 @@ master_sites            https://download.qt.io/official_releases/QtForPython/pys
 distname                pyside-setup-opensource-src-${version}
 use_xz                  yes
 
-checksums               rmd160  977e67be9a23148687e7f551155f3a60801a97ba \
-                        sha256  8c2ad1901a99165ed7bac8f522ee351ae3ebadd580024248f5a1db52e4a94b30 \
-                        size    3203908
+checksums               rmd160  160c14d4de72b5151e0fe03eca3d152ba6867e93 \
+                        sha256  3e255d64df08880d0281ebe86009d5ea45f24332b308954d967c33995f75e543 \
+                        size    3123964
 
 worksrcdir              ${distname}/sources/shiboken2
 patchfiles              patch-rpath.diff

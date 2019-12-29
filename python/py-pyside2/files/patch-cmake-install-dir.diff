@@ -1,0 +1,34 @@
+diff --git sources/pyside2/libpyside/CMakeLists.txt sources/pyside2/libpyside/CMakeLists.txt
+index 7493a453..c00cb66c 100644
+--- libpyside/CMakeLists.txt
++++ libpyside/CMakeLists.txt
+@@ -175,7 +175,7 @@ set(PYSIDE_GLUE "${CMAKE_INSTALL_PREFIX}/share/PySide2${pyside2_SUFFIX}/glue")
+ configure_package_config_file(
+     "${CMAKE_CURRENT_SOURCE_DIR}/PySide2Config-spec.cmake.in"
+     "${CMAKE_CURRENT_BINARY_DIR}/install/PySide2Config${SHIBOKEN_PYTHON_CONFIG_SUFFIX}.cmake"
+-     INSTALL_DESTINATION "${LIB_INSTALL_DIR}/cmake/PySide2-${BINDING_API_VERSION}"
++     INSTALL_DESTINATION "${LIB_INSTALL_DIR}/cmake/PySide2"
+      PATH_VARS PYSIDE_PYTHONPATH PYSIDE_TYPESYSTEMS PYSIDE_GLUE
+ )
+ 
+@@ -192,16 +192,16 @@ install(TARGETS pyside2 EXPORT PySide2Targets
+                         ARCHIVE DESTINATION "${LIB_INSTALL_DIR}"
+                         RUNTIME DESTINATION bin)
+ install(EXPORT PySide2Targets NAMESPACE PySide2::
+-        DESTINATION "${LIB_INSTALL_DIR}/cmake/PySide2-${BINDING_API_VERSION}")
++        DESTINATION "${LIB_INSTALL_DIR}/cmake/PySide2")
+ 
+ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pyside2${pyside2_SUFFIX}.pc"
+         DESTINATION "${LIB_INSTALL_DIR}/pkgconfig")
+ 
+ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PySide2Config.cmake"
+-        DESTINATION "${LIB_INSTALL_DIR}/cmake/PySide2-${BINDING_API_VERSION}")
++        DESTINATION "${LIB_INSTALL_DIR}/cmake/PySide2")
+ 
+ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/install/PySide2Config${SHIBOKEN_PYTHON_CONFIG_SUFFIX}.cmake"
+-        DESTINATION "${LIB_INSTALL_DIR}/cmake/PySide2-${BINDING_API_VERSION}")
++        DESTINATION "${LIB_INSTALL_DIR}/cmake/PySide2")
+ 
+ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/PySide2ConfigVersion.cmake"
+-        DESTINATION "${LIB_INSTALL_DIR}/cmake/PySide2-${BINDING_API_VERSION}")
++        DESTINATION "${LIB_INSTALL_DIR}/cmake/PySide2")

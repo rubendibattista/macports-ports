@@ -109,7 +109,12 @@ if {${subport} eq ${name}} {
         move ${destroot}${prefix}/include/shiboken2 ${destroot}${prefix}/include/shiboken2-${python_branch}
         move ${destroot}${prefix}/share/man/man1/shiboken2.1 ${destroot}${prefix}/share/man/man1/shiboken2-${python_branch}.1
         move ${destroot}${prefix}/bin/shiboken_tool.py ${destroot}${prefix}/bin/shiboken_tool-${python_branch}.py
-        
+
+        # Update cmake config files
+        set cmake_dir ${destroot}${prefix}/lib/cmake
+        reinplace "s:/bin/shiboken2:/bin/shiboken2-${python_branch}:g" ${cmake_dir}/Shiboken2/Shiboken2Targets-macports.cmake
+        reinplace "s:/include/shiboken2:/include/shiboken2-${python_branch}:g" ${cmake_dir}/Shiboken2/Shiboken2Targets.cmake
+
         move ${destroot}${prefix}/lib/cmake ${destroot}${python_prefix}/lib/cmake
         move ${destroot}${prefix}/lib/pkgconfig ${destroot}${python_prefix}/lib/pkgconfig
         move ${destroot}${prefix}/lib/python${python_branch} ${destroot}${python_prefix}/lib/python${python_branch}

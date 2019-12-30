@@ -1,0 +1,103 @@
+#-*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               cmake 1.1
+PortGroup               qt5 1.0
+
+name                    py-pyside2-tools
+version                 5.13.2
+revision                0
+categories-append       python devel
+platforms               darwin
+maintainers             {pmetzger @pmetzger} {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+description             Generates bindings for C++ libraries using CPython source code
+long_description        ${description}
+homepage                https://wiki.qt.io/Qt_for_Python
+# see ${worksrcdir}/sources/pyside2/PySide2/licensecomment.txt
+license                 {GPL-2 GPL-3+ LGPL-3}
+master_sites            https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-${version}-src
+distname                pyside-setup-opensource-src-${version}
+use_xz                  yes
+
+checksums           rmd160  160c14d4de72b5151e0fe03eca3d152ba6867e93 \
+                    sha256  3e255d64df08880d0281ebe86009d5ea45f24332b308954d967c33995f75e543 \
+                    size    3123964
+
+worksrcdir              ${distname}/sources/[string range ${name} 3 end]
+
+ set python_versions         {36 37}
+ set python_default_version  37
+ 
+if {${subport} eq ${name}} {
+    pre-fetch {
+        distfiles
+    }
+    fetch {}
+    pre-checksum {
+        distfiles
+    }
+    checksum {}
+    pre-extract {
+        distfiles
+    }
+    extract {}
+
+    # set up py-shiboken2 as a stub port that depends on the default pyXY-foo
+    depends_lib port:py${python_default_version}[string trimleft $name py]
+    configure {}
+    patch {}
+    build {}
+    destroot {
+        xinstall -d -m 0755 ${destroot}${prefix}/share/doc/${name}
+        system "echo $name is a stub port > ${destroot}${prefix}/share/doc/${name}/README"
+    }
+}
+
+ # Generate subports for python versions
+ foreach v $python_versions {
+     subport py${v}[string trimleft $name py] {
+         depends_lib-append  port:python${v}
+     }
+ }
+
+
+ if {${name} ne ${subport}} {
+     set python_version [string range ${subport} 2 3]
+     set python_branch  [string range ${python_version} 0 end-1].[string index ${python_version} end]
+     set python_prefix   ${frameworks_dir}/Python.framework/Versions/${python_branch}
+
+     depends_build-append \
+         port:py${python_version}-sphinx 
+ 
+     depends_lib-append \
+         port:libxslt 
+     
+         configure.args-append -DBUILD_TESTS=OFF \
+                               -DShiboken2_DIR=${python_prefix}/lib/cmake/Shiboken2 \
+                               -DPySide2_DIR=${python_prefix}/lib/cmake/PySide2 \
+                               -DPYTHON_EXECUTABLE=${prefix}/bin/python${python_branch} \
+                               -DPYTHON_INCLUDE_DIR=${python_prefix}/Headers/ \
+                               -DPYTHON_LIBRARY=${python_prefix}/lib/libpython${python_branch}.dylib
+
+    pre-destroot { 
+        xinstall -d -m 0755 ${destroot}${python_prefix}/lib
+    }
+
+    post-destroot {
+        move ${destroot}${prefix}/bin/pyside2-rcc ${destroot}${prefix}/bin/pyside2-rcc-${python_branch}
+        move ${destroot}${prefix}/share/man/man1/pyside2-rcc.1 ${destroot}${prefix}/share/man/man1/pyside2-rcc-${python_branch}.1
+
+        move ${destroot}${prefix}/bin/pyside2-uic ${destroot}${prefix}/bin/pyside2-uic-${python_branch}
+        move ${destroot}${prefix}/share/man/man1/pyside2-uic.1 ${destroot}${prefix}/share/man/man1/pyside2-uic-${python_branch}.1
+
+        move ${destroot}${prefix}/bin/pyside2-lupdate ${destroot}${prefix}/bin/pyside2-lupdate-${python_branch}
+        move ${destroot}${prefix}/share/man/man1/pyside2-lupdate.1 ${destroot}${prefix}/share/man/man1/pyside2-lupdate-${python_branch}.1
+
+        move ${destroot}${prefix}/bin/pyside_tool.py ${destroot}${prefix}/bin/pyside_tool-${python_branch}.py
+
+
+        move ${destroot}${prefix}/lib/python${python_branch} ${destroot}${python_prefix}/lib/python${python_branch}
+    }
+ 
+     livecheck.type      none
+ } 

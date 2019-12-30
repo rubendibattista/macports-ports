@@ -54,8 +54,6 @@ qt5.depends_component \
  set python_versions         {36 37}
  set python_default_version  37
  
- set llvm_version            9.0
-
 if {${subport} eq ${name}} {
     pre-fetch {
         distfiles
@@ -142,14 +140,10 @@ if {${subport} eq ${name}} {
          port:py${python_version}-sphinx 
  
      depends_lib-append \
-         port:libxslt \
-         port:clang-${llvm_version} \
-         port:llvm-${llvm_version}
+         port:libxslt
  
      configure.args-append    -DBUILD_TESTS=OFF \
                               -DShiboken2_DIR=${python_prefix}/lib/cmake/Shiboken2 \
-                              -DLLVM_CONFIG=${prefix}/bin/llvm-config-mp-${llvm_version} \
-                              -DUSE_PYTHON_VERSION=3 \
                               -DPYTHON_EXECUTABLE=${prefix}/bin/python${python_branch} \
                               -DPYTHON_INCLUDE_DIR=${python_prefix}/Headers/ \
                               -DPYTHON_LIBRARY=${python_prefix}/lib/libpython${python_branch}.dylib
@@ -165,6 +159,9 @@ if {${subport} eq ${name}} {
         move ${destroot}${prefix}/lib/cmake ${destroot}${python_prefix}/lib/cmake
         move ${destroot}${prefix}/lib/pkgconfig ${destroot}${python_prefix}/lib/pkgconfig
         move ${destroot}${prefix}/lib/python${python_branch} ${destroot}${python_prefix}/lib/python${python_branch}
+        
+        # I need to fix this since I'm moving stuff around
+        reinplace {s|${_IMPORT_PREFIX}|/opt/local|g} ${destroot}${python_prefix}/lib/cmake/PySide2/PySide2Targets-macports.cmake
     }
  
      livecheck.type      none

@@ -1,0 +1,13 @@
+diff --git src/MacAppBundle/CMakeLists.txt src/MacAppBundle/CMakeLists.txt
+index 91a56866a..b771722ed 100644
+--- src/MacAppBundle/CMakeLists.txt
++++ src/MacAppBundle/CMakeLists.txt
+@@ -59,7 +59,7 @@ if(BUILD_QT5)
+   set(XCTEST_PATH "${XCODE_PATH}/Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework/Versions/Current")
+ 
+   # add qt assistant to bundle
+-  install(PROGRAMS "${Qt5Core_DIR}/../../../libexec/Assistant.app/Contents/MacOS/Assistant" DESTINATION ${CMAKE_INSTALL_PREFIX}/MacOS)
++  install(PROGRAMS "${Qt5Core_DIR}/../../../bin/Assistant.app/Contents/MacOS/Assistant" DESTINATION ${CMAKE_INSTALL_PREFIX}/MacOS)
+ endif(BUILD_QT5)
+ 
+ # Ensure the actual plugin files are installed instead of symlinks.

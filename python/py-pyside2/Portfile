@@ -68,49 +68,6 @@ if {${subport} eq ${name}} {
     }
     extract {}
 
-<<<<<<< HEAD
-    destroot.args-append \
-        --qmake=${qt_qmake_cmd} \
-        --cmake=${prefix}/bin/cmake \
-        --skip-cmake \
-        --reuse-build
-
-    depends_lib-append \
-        port:libxml2 \
-        port:libxslt \
-        port:py${python.version}-numpy
-
-    qt5.depends_component \
-        qtxmlpatterns \
-        qt3d \
-        qtcharts \
-        qtdatavis3d \
-        qtdeclarative \
-        qtgamepad \
-        qtlocation \
-        qtmacextras \
-        qtmultimedia \
-        qtscript \
-        qtscxml \
-        qtsensors \
-        qtspeech \
-        qtsvg \
-        qttools \
-        qtwebchannel \
-        qtwebengine \
-        qtwebsockets
-
-    if {[vercmp ${qt5.version} 5.9] >=0 } {
-        qt5.depends_component \
-            qtremoteobjects
-     }
-
-    livecheck.type      none
-} else {
-    livecheck.type      regex
-    livecheck.url       https://download.qt.io/official_releases/QtForPython/pyside2/
-    livecheck.regex     (\\d+(\\.\\d+)+)
-=======
     # set up py-shiboken2 as a stub port that depends on the default pyXY-foo
     depends_lib port:py${python_default_version}[string trimleft $name py]
     configure {}
@@ -120,7 +77,6 @@ if {${subport} eq ${name}} {
         xinstall -d -m 0755 ${destroot}${prefix}/share/doc/${name}
         system "echo $name is a stub port > ${destroot}${prefix}/share/doc/${name}/README"
     }
->>>>>>> py-pyside2: Use cmake to build
 }
 
  # Generate subports for python versions

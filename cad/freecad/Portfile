@@ -1,14 +1,14 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem              1.0
-PortGroup               cmake 1.1
-PortGroup               compilers 1.0
+# PortGroup               compilers 1.0
 PortGroup               github 1.0
-PortGroup               python 1.0
+# PortGroup               python 1.0
+PortGroup               cmake 1.1
 PortGroup               qt5 1.0
 
 github.setup            FreeCAD FreeCAD 0.18.4
-revision                0
+revision                1
 name                    freecad
 categories              cad
 platforms               darwin
@@ -32,93 +32,112 @@ checksums               rmd160  2fdb6bb247571e2ffaffaca1defb02ca0b2e1cc5 \
                         sha256  d2f10f861cbcc9d19b34f79cd1c96baca2f23174f232e834f64a7c4a74f5f1e7 \
                         size    219760632
 
+qt5.depends_component   qtwebkit \
+                        qttools
+
 depends_build-append    port:doxygen
 
 depends_lib-append      port:boost \
                         port:Coin-framework \
                         port:eigen3 \
                         port:freetype \
+                        port:libmed \
                         port:opencascade \
-                        port:py${python.version}-matplotlib \
-                        port:py${python.version}-pivy \
-                        port:py${python.version}-pyside \
-                        port:py${python.version}-pyside-tools \
-                        port:py${python.version}-shiboken \
+                        port:orocos-kdl \
                         port:SoQt \
                         port:swig \
                         port:swig-python \
                         port:xercesc3 \
+                        port:vtk \
                         port:zlib
+
+# python.versions         {35 36 37}
+# python.default_version  37
 
 depends_run             port:qt5-sqlite-plugin
 
-patchfiles              cMake-FindCoin3D.cmake.diff \
-                        patch-src-Main-MainPy.cpp.diff
+patchfiles              find-shiboken2-pyside2.diff \
+                        fix-std.diff \
+                        fix-qt-assistant.diff
 
-# disable FreeCAD FEM module, as it requires hdf5 1.8.x
-patchfiles-append       patch-CMakeLists.txt.diff
+# patchfiles              cMake-FindCoin3D.cmake.diff \
+#                         patch-src-Main-MainPy.cpp.diff
+# 
+# # disable FreeCAD FEM module, as it requires hdf5 1.8.x
+# patchfiles-append       patch-CMakeLists.txt.diff
+# 
+# patchfiles-append       FindPySideTools.cmake.patch
 
-patchfiles-append       FindPySideTools.cmake.patch
+# post-patch {
+#     reinplace "s|/Applications|${applications_dir}|" \
+#         ${worksrcpath}/src/Mod/OpenSCAD/OpenSCADUtils.py
+# }
+#
 
-post-patch {
-    reinplace "s|/Applications|${applications_dir}|" \
-        ${worksrcpath}/src/Mod/OpenSCAD/OpenSCADUtils.py
+set python_versions {36 37}
+
+foreach pyver ${python_versions} {
+    # Conflicting python versions
+    set other_python_versions {}
+    foreach other_pyver ${python_versions} {
+        if {${other_pyver} ne ${pyver}} {
+            if {${other_pyver} ni ${other_python_versions}} {
+                lappend other_python_versions python${other_pyver}
+                }
+            }
+    }
+
+    # Get python branch
+    set python_branch  "[string range ${pyver} 0 end-1].[string index ${pyver} end]"
+
+    variant python${pyver} conflicts {*}${other_python_versions} description "Add Python ${python_branch} support" "
+            depends_lib-append port:py${pyver}-matplotlib \
+                               port:py${pyver}-pivy \
+                               port:py${pyver}-pyside2 
+            configure.args-append \
+                -DPYTHON_EXECUTABLE=${prefix}/bin/python${python_branch} \
+                -DPYTHON_INCLUDE_DIR=${frameworks_dir}/Python.framework/Versions/${python_branch}/Headers/ \
+                -DPYTHON_LIBRARY=${frameworks_dir}/Python.framework/Versions/${python_branch}/lib/libpython${python_branch}.dylib \
+                -DBUILD_QT5:BOOL=TRUE \
+                -DFREECAD_USE_EXTERNAL_KDL:BOOL=TRUE \
+                -DFREECAD_USE_OCC_VARIANT=\"Official Version\" \
+                -DFREECAD_CREATE_MAC_APP:BOOL=TRUE \
+                -DShiboken2_DIR=${frameworks_dir}/Python.framework/Versions/${python_branch}/lib/cmake/Shiboken2
+
+ "
 }
 
-compilers.choose        fc
-compilers.setup         require_fortran -g95
+# Default python variant
+set python_variant_isset    false
+foreach pyver ${python_versions} {
+    if {[variant_isset python${pyver}]} {
+        set python_variant_isset true
+        break
+    }
+}
 
-cmake.install_prefix    ${prefix}/libexec/${name}
-cmake.install_rpath     ${cmake.install_prefix}/lib
-
-configure.pre_args-replace \
-                        -DCMAKE_INSTALL_NAME_DIR=${prefix}/lib \
-                        -DCMAKE_INSTALL_NAME_DIR=${cmake.install_prefix}/lib
-
-configure.args-append   -DCMAKE_INSTALL_DATADIR=${prefix}/share/${name} \
-                        -DCMAKE_INSTALL_DOCDIR=${prefix}/share/doc/${name} \
-                        -DCMAKE_FRAMEWORK_PATH=${frameworks_dir} \
-                        -DMACPORTS_PREFIX=${prefix} 
-
-pre-configure {
-    # The c++ compiler is used for linking instead of fc.
-    # -L needs a path to a directory.
-
-    set libgfortran [exec ${configure.fc} --print-file-name libgfortran.a]
-    configure.ldflags-append "-L[file dirname ${libgfortran}]"
-
-    configure.args-append -DBUILD_ROBOT=NO \
-        -DPYTHON_LIBRARY=${python.lib} \
-        -DPYTHON_INCLUDE_DIR=${python.include} \
-        -DPYTHON_EXECUTABLE=${python.bin} \
-        -DShiboken_DIR=${python.prefix}/lib/cmake/Shiboken-1.2.4 \
-        -DPySide_DIR=${python.prefix}/lib/cmake/PySide-1.2.4 \
-        -DOCE_DIR=${frameworks_dir}/OCE.framework/Versions/0.17/Resources
+if {!$python_variant_isset} {
+    default_variants +python37
 }
 
 post-destroot {
-    # link the executables back
-    ln -s ${prefix}/libexec/${name}/MacOS/FreeCAD \
-        ${destroot}${prefix}/bin
+    # # create stub App
+    # set appdir ${destroot}${applications_dir}/FreeCAD.app
+    # xinstall -d ${appdir}/Contents/MacOS
+    # xinstall -d ${appdir}/Contents/Resources
 
-    ln -s ${prefix}/libexec/${name}/MacOS/FreeCADCmd \
-        ${destroot}${prefix}/bin
+    # xinstall -m 644 ${filespath}/Info.plist ${appdir}/Contents/
+    # xinstall -m 644 ${filespath}/FreeCAD.icns ${appdir}/Contents/Resources/
+    # xinstall -m 755 ${filespath}/FreeCAD ${appdir}/Contents/MacOS
 
-    # create stub App
-    set appdir ${destroot}${applications_dir}/FreeCAD.app
-    xinstall -d ${appdir}/Contents/MacOS
-    xinstall -d ${appdir}/Contents/Resources
-
-    xinstall -m 644 ${filespath}/Info.plist ${appdir}/Contents/
-    xinstall -m 644 ${filespath}/FreeCAD.icns ${appdir}/Contents/Resources/
-    xinstall -m 755 ${filespath}/FreeCAD ${appdir}/Contents/MacOS
-
-    reinplace -W ${appdir}/Contents "s,@@VERSION@@,${version},g" Info.plist
-    reinplace -W ${appdir}/Contents/MacOS "s,@@PREFIX@@,${prefix},g" FreeCAD
+    # reinplace -W ${appdir}/Contents "s,@@VERSION@@,${version},g" Info.plist
+    # reinplace -W ${appdir}/Contents/MacOS "s,@@PREFIX@@,${prefix},g" FreeCAD
 }
 
 variant oce description {use Community Edition version of Open CASCADE} {
      depends_lib-replace port:opencascade port:oce
+     configure.args-replace  -DFREECAD_USE_OCC_VARIANT="Official Version" \
+                             -DFREECAD_USE_OCC_VARIANT="Community Edition"
 }
 
 github.livecheck.regex  {(\d\.\d+(\.\d+)?(?!_pre))}

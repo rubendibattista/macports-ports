@@ -1,0 +1,16 @@
+diff --git CMakeLists.txt CMakeLists.txt
+index fe55662e4..ae7ad4c11 100644
+--- CMakeLists.txt
++++ CMakeLists.txt
+@@ -964,11 +964,6 @@ endif()
+             #SET(PYTHON_BASENAME "" CACHE STRING "Same as PYTHON_SUFFIX but for PySide. If left empty, PYTHON_SUFFIX will be used: <PySideConfigPYTHON_BASENAME.cmake>")
+         endif()
+ 
+-        if(DEFINED MACPORTS_PREFIX)
+-            find_package(Shiboken REQUIRED HINTS "${PYTHON_LIBRARY_DIR}/cmake")
+-            find_package(PySide REQUIRED HINTS "${PYTHON_LIBRARY_DIR}/cmake")
+-        endif(DEFINED MACPORTS_PREFIX)
+-
+         find_package(Shiboken2 QUIET)# REQUIRED
+         if (Shiboken2_FOUND)
+             # Shiboken2 config file was found but it may use the wrong Python version

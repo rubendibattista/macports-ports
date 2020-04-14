@@ -9,9 +9,9 @@ cmake.generator     Ninja
 
 name                inkscape-gtk3-devel
 conflicts           inkscape inkscape-devel
-set git_commit      ea787eb7
-set git_date        20191207
-revision            4
+set git_commit      08e4d8b5
+set git_date        20200408
+revision            0
 version             1.0alpha-${git_date}
 license             GPL-2 LGPL-2.1
 maintainers         {devans @dbevans}
